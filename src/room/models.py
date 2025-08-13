@@ -1,20 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
-
-# Create your models here.
+from django.conf import settings
 
 
-class User(AbstractUser):
-
-    name = models.CharField(max_length=64)
-    email = models.EmailField(unique=True)
-    bio = models.TextField(null=True)
-
-    avatar = models.ImageField(null=True, default='avatar.svg')
-
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+User = settings.AUTH_USER_MODEL
 
 
 class Topic(models.Model):
@@ -33,14 +21,11 @@ class Room(models.Model):
     participants = models.ManyToManyField(User, related_name="participants", blank=True)
     topic = models.ForeignKey(Topic, on_delete=models.SET_NULL, null=True, related_name="rooms")
 
-
     class Meta:
         ordering = ['-updated_at', '-created_at']
 
-
     def __str__(self):
         return self.name
-
 
 
 class Message(models.Model):
@@ -52,7 +37,6 @@ class Message(models.Model):
 
     class Meta:
         ordering = ['-updated_at', '-created_at']
-
 
     def __str__(self):
         return self.body[0:50]

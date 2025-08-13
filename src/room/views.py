@@ -1,106 +1,11 @@
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from .forms import MyUserCreationForm
-
-from room.forms import UserForm
-
 from django.shortcuts import render, redirect
-from django.db.models import Q
+from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+from authentication.forms import UserForm
+from .models import Room, Topic, Message
 
 
-from room.models import *
-
-
-# Create your views here.
-
-
-def register_user(request):
-
-    form_template = MyUserCreationForm()
-
-    if request.method == 'POST':
-
-        form = MyUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.username = user.username.lower()
-            user.save()
-            login(request, user)
-            return redirect("room:home")
-        else:
-            return render(request, 'room/login.html', {
-                "message": "an error occured during registration. Please try again",
-                "form": form_template,
-            })
-
-    return render(request, 'room/register.html', {
-        "form": form_template,
-    })
-
-
-def login_page(request):
-
-    if request.method == 'POST':
-
-        if request.user.is_authenticated:
-            return redirect("room:home")
-        
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-
-        user = None
-        try:
-            user = User.objects.get(email=email)
-        except:
-            return render(request, 'room/login.html', {
-                "message": "Email does not exist"
-            })
-        else:
-            user = authenticate(request, email=email, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect("room:home")
-            return render(request, 'room/login.html', {
-                "message": "Invalid login credentials"
-            })
-
-    # if there is a get request        
-    return render(request, 'room/login.html')
-
-
-def logout_page(request):
-
-    if request.user.is_authenticated:
-        logout(request)
-    
-    return redirect("room:login")
-
-
-def home_page(request):
-
-    q = request.GET.get("q") if request.GET.get("q") else ""
-
-    rooms = Room.objects.filter(
-        Q(topic__name__icontains=q) |
-        Q(name__icontains=q) |
-        Q(description__icontains=q)
-    )
-    topics = Topic.objects.all()[0:5]
-    room_messages = Message.objects.filter(
-        Q(room__name__icontains=q) |
-        Q(room__topic__name__icontains=q)
-    )
-
-    room_count = rooms.count()
-
-    return render(request, 'room/home.html', {
-        "rooms": rooms,
-        "topics": topics,
-        "room_count": room_count,
-        "room_messages": room_messages,
-    })
-
-
+User = get_user_model()
 
 def rooms_page(request):
 
@@ -237,9 +142,6 @@ def delete_message(request, room_id, msg_id):
     })
 
 
-
-
-
 def topicsPage(request):
 
     q = request.GET.get("q") if request.GET.get("q") else ""
@@ -269,7 +171,6 @@ def editUser(request):
         "user": user,
         "form": form,
     })
-
 
 
 def activityPage(request):
