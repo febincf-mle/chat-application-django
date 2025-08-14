@@ -25,6 +25,11 @@ SECRET_KEY = config('DJANGO_SECRET_KEY', default=None)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DJANGO_DEBUG', cast=bool, default=True)
 
+if DEBUG:
+    from .dev import *
+else:
+    from .prod import *
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -34,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'authentication',
+    'room',
 ]
 
 MIDDLEWARE = [
@@ -64,6 +72,9 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+
+# Custom USER model
+AUTH_USER_MODEL = 'authentication.CustomUser'
 
 
 # Password validation
