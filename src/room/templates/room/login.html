@@ -14,7 +14,7 @@
         <div class="layout__body">
           <h2 class="auth__tagline">Find your study partner</h2>
 
-          <form class="form" action="{% url 'room:login' %}" method="post">
+          <form class="form" action="{% url 'auth:login' %}" method="post">
             {% csrf_token %}
             <div class="form__group form__group">
               <label for="room_name">Email</label>
@@ -53,7 +53,7 @@
 
           <div class="auth__action">
             <p>Haven't signed up yet?</p>
-            <a href="{% url 'room:register' %}" class="btn btn--link">Sign Up</a>
+            <a href="{% url 'auth:register' %}" class="btn btn--link">Sign Up</a>
           </div>
         </div>
       </div>
